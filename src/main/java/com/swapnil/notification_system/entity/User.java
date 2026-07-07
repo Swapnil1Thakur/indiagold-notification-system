@@ -5,10 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.persistence.OneToOne;
 
 @Entity
 @Table(name = "users")
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor @AllArgsConstructor
 public class User {
 
@@ -25,5 +27,8 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private String phoneNumber;
+
+    @OneToOne(mappedBy = "user")
+    private UserPreference preference;
 
 }
