@@ -10,6 +10,10 @@ import com.swapnil.notification_system.sender.InAppNotificationSender;
 import com.swapnil.notification_system.sender.PushNotificationSender;
 import com.swapnil.notification_system.sender.SMSNotificationSender;
 import org.springframework.stereotype.Service;
+import com.swapnil.notification_system.entity.User;
+import com.swapnil.notification_system.entity.UserPreference;
+
+import java.util.Optional;
 
 @Service
 public class NotificationService {
@@ -40,6 +44,17 @@ public class NotificationService {
     }
 
     public NotificationResponse sendNotification(NotificationRequest request){
+
+        // find user using the user ID from the request
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not  found"));
+
+        // find notification preferences for the user
+        UserPreference userPreference = userPreferenceRepository.findByUserId(user.getId())
+                .orElseThrow(()-> new RuntimeException("User preferences not found"));
+
+        //business logic in next step
         throw new UnsupportedOperationException("Method implementation is pending");
+
     }
 }
