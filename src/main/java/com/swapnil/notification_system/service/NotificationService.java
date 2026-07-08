@@ -54,6 +54,37 @@ public class NotificationService {
                 .orElseThrow(()-> new RuntimeException("User preferences not found"));
 
         //business logic in next step
+        //iterating through all reqeusted notification channels
+
+        for(var channel : request.getChannels()){
+            switch (channel){
+                case EMAIL :
+                    if(userPreference.isEmailEnabled()){
+                        emailNotificationSender.send(user,request.getTitle(), request.getBody());
+                    }
+
+                    break;
+                case SMS:
+                    if(userPreference.isSmsEnabled()){
+                        smsNotificationSender.send(user, request.getTitle(),  request.getBody());
+
+
+
+                    }
+                    break;
+
+                    case IN_APP:
+                    if(userPreference.isInAppEnabled()){
+                        inAppNotificationSender.send(user, request.getTitle(), request.getBody());
+                    }
+                    break;
+
+                default:
+                    throw new IllegalArgumentException("Unsupported notification channel.");
+
+            }
+        }
+
         throw new UnsupportedOperationException("Method implementation is pending");
 
     }
