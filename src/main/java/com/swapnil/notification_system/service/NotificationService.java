@@ -12,8 +12,12 @@ import com.swapnil.notification_system.sender.SMSNotificationSender;
 import org.springframework.stereotype.Service;
 import com.swapnil.notification_system.entity.User;
 import com.swapnil.notification_system.entity.UserPreference;
+import com.swapnil.notification_system.entity.NotificationHistory;
+import com.swapnil.notification_system.enums.DeliveryStatus;
+import com.swapnil.notification_system.enums.NotificationChannel;
 
-import java.util.Optional;
+import java.time.LocalDateTime;
+
 
 @Service
 public class NotificationService {
@@ -53,39 +57,171 @@ public class NotificationService {
         UserPreference userPreference = userPreferenceRepository.findByUserId(user.getId())
                 .orElseThrow(()-> new RuntimeException("User preferences not found"));
 
+        //counter to track notification processing the results
+        int successful = 0;
+        int failed = 0;
+        int skipped = 0;
+
+
         //business logic in next step
         //iterating through all reqeusted notification channels
 
-        for(var channel : request.getChannels()){
-            switch (channel){
-                case EMAIL :
-                    if(userPreference.isEmailEnabled()){
-                        emailNotificationSender.send(user,request.getTitle(), request.getBody());
+        for(NotificationChannel channel : request.getChannels()){
+            switch (channel) {
+
+                case EMAIL:
+
+                    if (userPreference.isEmailEnabled()) {
+
+                        emailNotificationSender.send(user, request.getTitle(), request.getBody());
+
+                        saveNotificationHistory(
+                                user,
+                                NotificationChannel.EMAIL,
+                                request.getTitle(),
+                                request.getBody(),
+                                DeliveryStatus.SUCCESS
+                        );
+
+                        successful++;
+
+                    } else {
+
+                        saveNotificationHistory(
+                                user,
+                                NotificationChannel.EMAIL,
+                                request.getTitle(),
+                                request.getBody(),
+                                DeliveryStatus.SKIPPED
+                        );
+                        skipped++;
                     }
 
                     break;
+
                 case SMS:
-                    if(userPreference.isSmsEnabled()){
-                        smsNotificationSender.send(user, request.getTitle(),  request.getBody());
 
+                    if (userPreference.isSmsEnabled()) {
 
+                        smsNotificationSender.send(user, request.getTitle(), request.getBody());
 
+                        saveNotificationHistory(
+                                user,
+                                NotificationChannel.SMS,
+                                request.getTitle(),
+                                request.getBody(),
+                                DeliveryStatus.SUCCESS
+                        );
+                        successful++;
+
+                    } else {
+
+                        saveNotificationHistory(
+                                user,
+                                NotificationChannel.SMS,
+                                request.getTitle(),
+                                request.getBody(),
+                                DeliveryStatus.SKIPPED
+                        );
+                        skipped++;
                     }
+
                     break;
 
-                    case IN_APP:
-                    if(userPreference.isInAppEnabled()){
-                        inAppNotificationSender.send(user, request.getTitle(), request.getBody());
+                case PUSH:
+
+                    if (userPreference.isPushEnabled()) {
+
+                        pushNotificationSender.send(user, request.getTitle(), request.getBody());
+
+                        saveNotificationHistory(
+                                user,
+                                NotificationChannel.PUSH,
+                                request.getTitle(),
+                                request.getBody(),
+                                DeliveryStatus.SUCCESS
+                        );
+                        successful++;
+
+                    } else {
+
+                        saveNotificationHistory(
+                                user,
+                                NotificationChannel.PUSH,
+                                request.getTitle(),
+                                request.getBody(),
+                                DeliveryStatus.SKIPPED
+                        );
+                        skipped++;
                     }
+
+                    break;
+
+                case IN_APP:
+
+                    if (userPreference.isInAppEnabled()) {
+
+                        inAppNotificationSender.send(user, request.getTitle(), request.getBody());
+
+                        saveNotificationHistory(
+                                user,
+                                NotificationChannel.IN_APP,
+                                request.getTitle(),
+                                request.getBody(),
+                                DeliveryStatus.SUCCESS
+                        );
+                        successful++;
+
+                    } else {
+
+                        saveNotificationHistory(
+                                user,
+                                NotificationChannel.IN_APP,
+                                request.getTitle(),
+                                request.getBody(),
+                                DeliveryStatus.SKIPPED
+                        );
+                        skipped++;
+                    }
+
                     break;
 
                 default:
                     throw new IllegalArgumentException("Unsupported notification channel.");
-
             }
         }
 
-        throw new UnsupportedOperationException("Method implementation is pending");
+        //throw new UnsupportedOperationException("Method implementation is pending");
+        return new NotificationResponse(
+                "Notification processing completed",
+                successful,
+                failed,
+                skipped
+        );
 
+    }
+
+    //helper method to save notification history
+    private void saveNotificationHistory(User user,
+                                         NotificationChannel channel,
+                                         String title,
+                                         String body,
+                                         DeliveryStatus status) {
+
+        NotificationHistory history = new NotificationHistory();
+
+        history.setUser(user);
+
+        history.setChannel(channel);
+
+        history.setTitle(title);
+
+        history.setBody(body);
+
+        history.setStatus(status);
+
+        history.setSentAt(LocalDateTime.now());
+
+        notificationHistoryRepository.save(history);
     }
 }
