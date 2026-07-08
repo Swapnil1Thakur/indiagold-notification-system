@@ -9,7 +9,8 @@ public class EmailNotificationSender implements NotificationSender{
 
     @Override
     public void send(User user, String title, String body) {
-        System.out.println("EMAIL NOTIFICATION");
+
+        System.out.println(" EMAIL NOTIFICATION ");
 
         System.out.println("To: " + user.getEmail());    //recipient email
 
@@ -17,6 +18,6 @@ public class EmailNotificationSender implements NotificationSender{
 
         System.out.println("Message: " + body);            //notification body
 
-        System.out.println("\n");
+        System.out.println("-----\n");
     }
 }
