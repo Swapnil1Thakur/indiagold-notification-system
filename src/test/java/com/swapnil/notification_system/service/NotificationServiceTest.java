@@ -56,7 +56,7 @@ public class NotificationServiceTest {
     @Test
     void shouldSendNotificationsBasedOnUserPreferences() {
 
-        // ---------- Arrange ----------
+        // Arrange
 
         User user = new User();
         user.setId(1L);
@@ -89,12 +89,12 @@ public class NotificationServiceTest {
         when(userPreferenceRepository.findByUserId(1L))
                 .thenReturn(Optional.of(preference));
 
-        // ---------- Act ----------
+        // Act
 
         NotificationResponse response =
                 notificationService.sendNotification(request);
 
-        // ---------- Assert ----------
+        // Assert
 
         assertEquals(3, response.getSuccessful());
         assertEquals(0, response.getFailed());
@@ -119,7 +119,7 @@ public class NotificationServiceTest {
     @Test
     void shouldThrowExceptionWhenUserDoesNotExist() {
 
-        // ---------- Arrange ----------
+        // Arrange
 
         NotificationRequest request = new NotificationRequest(
                 1L,
@@ -131,7 +131,7 @@ public class NotificationServiceTest {
         when(userRepository.findById(1L))
                 .thenReturn(Optional.empty());
 
-        // ---------- Act & Assert ----------
+        //Act & Assert
 
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
@@ -140,7 +140,7 @@ public class NotificationServiceTest {
 
         assertEquals("User not found", exception.getMessage());
 
-        // ---------- Verify ----------
+        // Verify
 
         verify(userPreferenceRepository, never()).findByUserId(anyLong());
 
@@ -157,7 +157,7 @@ public class NotificationServiceTest {
     @Test
     void shouldThrowExceptionWhenUserPreferenceDoesNotExist() {
 
-        // ---------- Arrange ----------
+        // Arrange
 
         User user = new User();
         user.setId(1L);
@@ -178,7 +178,7 @@ public class NotificationServiceTest {
         when(userPreferenceRepository.findByUserId(1L))
                 .thenReturn(Optional.empty());
 
-        // ---------- Act & Assert ----------
+        //  Act & Assert
 
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
@@ -187,7 +187,7 @@ public class NotificationServiceTest {
 
         assertEquals("User preferences not found", exception.getMessage());
 
-        // ---------- Verify ----------
+        // Verify
 
         verify(notificationHistoryRepository, never()).save(any());
 
@@ -202,7 +202,7 @@ public class NotificationServiceTest {
     @Test
     void shouldSkipDisabledNotificationChannels() {
 
-        // ---------- Arrange ----------
+        //Arrange
 
         User user = new User();
         user.setId(1L);
@@ -235,12 +235,12 @@ public class NotificationServiceTest {
         when(userPreferenceRepository.findByUserId(1L))
                 .thenReturn(Optional.of(preference));
 
-        // ---------- Act ----------
+        //Act
 
         NotificationResponse response =
                 notificationService.sendNotification(request);
 
-        // ---------- Assert ----------
+        //Assert
 
         assertEquals(1, response.getSuccessful());
         assertEquals(0, response.getFailed());
@@ -265,7 +265,7 @@ public class NotificationServiceTest {
     @Test
     void shouldSaveNotificationHistoryForEveryRequestedChannel() {
 
-        // ---------- Arrange ----------
+        // Arrange
 
         User user = new User();
         user.setId(1L);
@@ -298,11 +298,11 @@ public class NotificationServiceTest {
         when(userPreferenceRepository.findByUserId(1L))
                 .thenReturn(Optional.of(preference));
 
-        // ---------- Act ----------
+        // Act
 
         notificationService.sendNotification(request);
 
-        // ---------- Assert ----------
+        //  Assert
 
         verify(notificationHistoryRepository, times(4))
                 .save(any(NotificationHistory.class));
