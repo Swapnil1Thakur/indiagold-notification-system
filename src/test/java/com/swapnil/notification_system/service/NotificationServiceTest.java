@@ -2,6 +2,7 @@ package com.swapnil.notification_system.service;
 
 import com.swapnil.notification_system.dto.NotificationRequest;
 import com.swapnil.notification_system.dto.NotificationResponse;
+import com.swapnil.notification_system.entity.NotificationHistory;
 import com.swapnil.notification_system.entity.User;
 import com.swapnil.notification_system.entity.UserPreference;
 import com.swapnil.notification_system.enums.NotificationChannel;
@@ -196,6 +197,115 @@ public class NotificationServiceTest {
                 pushNotificationSender,
                 inAppNotificationSender
         );
+    }
+
+    @Test
+    void shouldSkipDisabledNotificationChannels() {
+
+        // ---------- Arrange ----------
+
+        User user = new User();
+        user.setId(1L);
+        user.setName("Swapnil");
+        user.setEmail("swapnil@example.com");
+        user.setPhoneNumber("9876543210");
+
+        UserPreference preference = new UserPreference();
+        preference.setUser(user);
+        preference.setEmailEnabled(false);
+        preference.setSmsEnabled(false);
+        preference.setPushEnabled(false);
+        preference.setInAppEnabled(true);
+
+        NotificationRequest request = new NotificationRequest(
+                1L,
+                "Gold Price Alert",
+                "Gold price increased",
+                List.of(
+                        NotificationChannel.EMAIL,
+                        NotificationChannel.SMS,
+                        NotificationChannel.PUSH,
+                        NotificationChannel.IN_APP
+                )
+        );
+
+        when(userRepository.findById(1L))
+                .thenReturn(Optional.of(user));
+
+        when(userPreferenceRepository.findByUserId(1L))
+                .thenReturn(Optional.of(preference));
+
+        // ---------- Act ----------
+
+        NotificationResponse response =
+                notificationService.sendNotification(request);
+
+        // ---------- Assert ----------
+
+        assertEquals(1, response.getSuccessful());
+        assertEquals(0, response.getFailed());
+        assertEquals(3, response.getSkipped());
+
+        verify(emailNotificationSender, never())
+                .send(any(), any(), any());
+
+        verify(smsNotificationSender, never())
+                .send(any(), any(), any());
+
+        verify(pushNotificationSender, never())
+                .send(any(), any(), any());
+
+        verify(inAppNotificationSender, times(1))
+                .send(user, request.getTitle(), request.getBody());
+
+        verify(notificationHistoryRepository, times(4))
+                .save(any());
+    }
+
+    @Test
+    void shouldSaveNotificationHistoryForEveryRequestedChannel() {
+
+        // ---------- Arrange ----------
+
+        User user = new User();
+        user.setId(1L);
+        user.setName("Swapnil");
+        user.setEmail("swapnil@example.com");
+        user.setPhoneNumber("9876543210");
+
+        UserPreference preference = new UserPreference();
+        preference.setUser(user);
+        preference.setEmailEnabled(true);
+        preference.setSmsEnabled(true);
+        preference.setPushEnabled(true);
+        preference.setInAppEnabled(true);
+
+        NotificationRequest request = new NotificationRequest(
+                1L,
+                "Gold Price Alert",
+                "Gold price increased",
+                List.of(
+                        NotificationChannel.EMAIL,
+                        NotificationChannel.SMS,
+                        NotificationChannel.PUSH,
+                        NotificationChannel.IN_APP
+                )
+        );
+
+        when(userRepository.findById(1L))
+                .thenReturn(Optional.of(user));
+
+        when(userPreferenceRepository.findByUserId(1L))
+                .thenReturn(Optional.of(preference));
+
+        // ---------- Act ----------
+
+        notificationService.sendNotification(request);
+
+        // ---------- Assert ----------
+
+        verify(notificationHistoryRepository, times(4))
+                .save(any(NotificationHistory.class));
     }
 
 }
