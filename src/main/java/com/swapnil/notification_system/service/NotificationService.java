@@ -51,7 +51,7 @@ public class NotificationService {
 
         // find user using the user ID from the request
         User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not  found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         // find notification preferences for the user
         UserPreference userPreference = userPreferenceRepository.findByUserId(user.getId())

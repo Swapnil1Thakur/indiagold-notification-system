@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)               //this will enable Mockito support in JUnit 5
@@ -50,7 +51,6 @@ public class NotificationServiceTest {
 
     @InjectMocks
     private NotificationService notificationService;             // creates NotificationService and injects all mocks
-
 
     @Test
     void shouldSendNotificationsBasedOnUserPreferences() {
@@ -113,6 +113,44 @@ public class NotificationServiceTest {
 
         verify(notificationHistoryRepository, times(4))
                 .save(any());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserDoesNotExist() {
+
+        // ---------- Arrange ----------
+
+        NotificationRequest request = new NotificationRequest(
+                1L,
+                "Gold Price Alert",
+                "Gold price increased",
+                List.of(NotificationChannel.EMAIL)
+        );
+
+        when(userRepository.findById(1L))
+                .thenReturn(Optional.empty());
+
+        // ---------- Act & Assert ----------
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> notificationService.sendNotification(request)
+        );
+
+        assertEquals("User not found", exception.getMessage());
+
+        // ---------- Verify ----------
+
+        verify(userPreferenceRepository, never()).findByUserId(anyLong());
+
+        verify(notificationHistoryRepository, never()).save(any());
+
+        verifyNoInteractions(
+                emailNotificationSender,
+                smsNotificationSender,
+                pushNotificationSender,
+                inAppNotificationSender
+        );
     }
 
 }
