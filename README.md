@@ -286,6 +286,50 @@ API testing was performed using Postman.
 - Monitoring and logging using Prometheus and Grafana
 
 ---
+---
+
+## Screenshots
+
+### API Testing
+
+The notification endpoint was successfully tested using Postman.
+
+![Postman API Testing](screenshots/postman-api-testing.png)
+
+---
+
+### H2 Database
+
+The application uses an H2 in-memory database to store users, user preferences, and notification history during development.
+
+![H2 Database](screenshots/h2-db-working.png)
+
+---
+
+### Notification History
+
+Each notification request is recorded with its delivery channel and status (SUCCESS / SKIPPED), providing a complete audit trail.
+
+![Notification History](screenshots/notification-history.png)
+
+---
+
+### Unit Testing
+
+The notification service is covered with JUnit 5 and Mockito unit tests for routing, validation, and notification history persistence.
+
+![Unit Tests](screenshots/unit-tests-passed.png)
+
+---
+
+### Application Console
+
+Console logs showing notification processing and persistence during application execution.
+
+![Application Console](screenshots/console.png)
+
+---
+
 
 ## Author
 
