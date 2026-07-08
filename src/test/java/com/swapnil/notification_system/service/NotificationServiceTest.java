@@ -153,4 +153,49 @@ public class NotificationServiceTest {
         );
     }
 
+    @Test
+    void shouldThrowExceptionWhenUserPreferenceDoesNotExist() {
+
+        // ---------- Arrange ----------
+
+        User user = new User();
+        user.setId(1L);
+        user.setName("Swapnil");
+        user.setEmail("swapnil@example.com");
+        user.setPhoneNumber("9876543210");
+
+        NotificationRequest request = new NotificationRequest(
+                1L,
+                "Gold Price Alert",
+                "Gold price increased",
+                List.of(NotificationChannel.EMAIL)
+        );
+
+        when(userRepository.findById(1L))
+                .thenReturn(Optional.of(user));
+
+        when(userPreferenceRepository.findByUserId(1L))
+                .thenReturn(Optional.empty());
+
+        // ---------- Act & Assert ----------
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> notificationService.sendNotification(request)
+        );
+
+        assertEquals("User preferences not found", exception.getMessage());
+
+        // ---------- Verify ----------
+
+        verify(notificationHistoryRepository, never()).save(any());
+
+        verifyNoInteractions(
+                emailNotificationSender,
+                smsNotificationSender,
+                pushNotificationSender,
+                inAppNotificationSender
+        );
+    }
+
 }
