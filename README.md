@@ -207,7 +207,7 @@ to verify that notification records have been stored successfully.
 ## Notification Processing Flow
 
 ```
-Client
+   Client
 
       │
 
