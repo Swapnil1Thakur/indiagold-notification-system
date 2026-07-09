@@ -335,7 +335,7 @@ Each notification request is recorded with its delivery channel and status (SUCC
 The notification service is covered with five JUnit 5 and Mockito unit tests that validate the core business logic, including notification routing, user validation, preference validation, disabled channel handling, and notification history persistence. All test cases pass successfully.
 
 <p align="center">
-  <img src="screenshots/UNIT-TESTS-passed.png.png" alt="JUnit 5 Test Results" width="900"/>
+  <img src="screenshots/UNIT-TESTS-passed.png" alt="JUnit 5 Test Results" width="900"/>
 </p>
 ---
 
