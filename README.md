@@ -10,6 +10,8 @@ This project was developed as part of a backend engineering assignment with a fo
 
 ---
 
+
+
 ## Features
 
 - Unified REST API for sending notifications
@@ -131,6 +133,7 @@ This table acts as an audit log for all notification requests.
 
 ## API Documentation
 
+
 ### Send Notification
 
 **Endpoint**
@@ -165,6 +168,39 @@ POST /notifications
     "skipped": 1
 }
 ```
+
+---
+## Testing the API with Postman
+
+1. Start the Spring Boot application.
+
+2. Open Postman.
+
+3. Create a **POST** request:
+
+```
+http://localhost:8080/notifications
+```
+
+4. Set the header:
+
+```
+Content-Type: application/json
+```
+
+5. Copy the sample request body shown.
+
+6. Click **Send**.
+
+7. Verify the JSON response.
+
+8. Open the H2 Console and execute:
+
+```sql
+SELECT * FROM NOTIFICATION_HISTORY;
+```
+
+to verify that notification records have been stored successfully.
 
 ---
 
@@ -223,7 +259,7 @@ Return API Response
 ### Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Swapnil1Thakur/indiagold-notification-system.git
 ```
 
 ### Navigate to the Project
@@ -243,6 +279,8 @@ mvn clean install
 ```bash
 mvn spring-boot:run
 ```
+Or run the project directly from your IDE by executing the `NotificationSystemApplication` class.
+
 
 The application starts on:
 
@@ -287,7 +325,7 @@ Frameworks Used
 - JUnit 5
 - Mockito
 
-API testing was performed using Postman.
+API endpoints were manually tested using Postman, while the core business logic was verified through JUnit 5 and Mockito unit tests.
 
 ---
 
@@ -305,7 +343,7 @@ API testing was performed using Postman.
 - Monitoring and logging using Prometheus and Grafana
 
 ---
----
+
 
 ## Screenshots
 
@@ -333,13 +371,14 @@ Each notification request is recorded with its delivery channel and status (SUCC
 
 ---
 
-### Unit Testing
+### Unit Testing Results
 
 The notification service is covered with five JUnit 5 and Mockito unit tests that validate the core business logic, including notification routing, user validation, preference validation, disabled channel handling, and notification history persistence. All test cases pass successfully.
 
 <p align="center">
   <img src="screenshots/UNIT-TESTS-passed.png" alt="JUnit 5 Test Results" width="900"/>
 </p>
+
 ---
 
 ### Application Console
@@ -355,4 +394,4 @@ Console logs showing notification processing and persistence during application 
 
 **Swapnil Thakur**
 
-Backend Developer | Java | Spring Boot | REST APIs | JPA | Hibernate
+Backend Developer | Java | Spring Boot | REST APIs | Spring Data JPA | Hibernate | SQL
