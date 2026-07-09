@@ -75,17 +75,20 @@ src
 The project follows a layered Spring Boot architecture that separates responsibilities across the Controller, Service, Repository, and Entity layers. Notification delivery is delegated to dedicated sender implementations (Email, SMS, Push, and In-App), while user preferences determine which channels are allowed for each notification request.
 
 <p align="center">
-  <img src="screenshots/uml-class-diagram.png" alt="UML Class Diagram" width="900"/>
+  <img src="https://raw.githubusercontent.com/Swapnil1Thakur/indiagold-notification-system/main/screenshots/uml-class-diagram.png" alt="UML Class Diagram" width="900"/>
 </p>
 
+---
 
 ## Entity Relationship Diagram
 
 The following Entity Relationship Diagram illustrates the database schema used by the Notification System. It represents the relationships between Users, User Preferences, and Notification History using Crow's Foot notation.
 
 <p align="center">
-  <img src="screenshots/er-diagram.png" alt="Entity Relationship Diagram" width="900"/>
+  <img src="https://raw.githubusercontent.com/Swapnil1Thakur/indiagold-notification-system/main/screenshots/er-diagram.png" alt="Entity Relationship Diagram" width="900"/>
 </p>
+
+---
 
 ## Database Design
 
